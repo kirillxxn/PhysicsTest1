@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Question from '../Question/Question'
 import { questions } from '../../data/questions'
-import type { TestState } from '../../types/test'
+import type { TestState, UserAnswer } from '../../types/test'
 import styles from './TestComponent.module.css'
 
 const TestComponent: React.FC = () => {
@@ -51,12 +51,32 @@ const TestComponent: React.FC = () => {
 		}
 	}, [testState.showResults])
 
-	const handleAnswer = (answer: [number, number, number]) => {
+	const handleAnswer = (
+		answer: [number, number, number] | [number, number]
+	) => {
 		const currentQuestionData = getCurrentQuestion()
-		const isCorrect =
-			answer[0] === currentQuestionData.correctAnswer[0] &&
-			answer[1] === currentQuestionData.correctAnswer[1] &&
-			answer[2] === currentQuestionData.correctAnswer[2]
+
+		let isCorrect: boolean
+		if (currentQuestionData.correctAnswer.length === 2) {
+			const userAnswer = answer as [number, number]
+			const correctAnswer = currentQuestionData.correctAnswer as [
+				number,
+				number
+			]
+			isCorrect =
+				userAnswer[0] === correctAnswer[0] && userAnswer[1] === correctAnswer[1]
+		} else {
+			const userAnswer = answer as [number, number, number]
+			const correctAnswer = currentQuestionData.correctAnswer as [
+				number,
+				number,
+				number
+			]
+			isCorrect =
+				userAnswer[0] === correctAnswer[0] &&
+				userAnswer[1] === correctAnswer[1] &&
+				userAnswer[2] === correctAnswer[2]
+		}
 
 		setTestState(prev => ({
 			...prev,
@@ -243,32 +263,38 @@ const TestComponent: React.FC = () => {
 
 	const renderMatchingAnswerComparison = (
 		question: any,
-		userAnswer: any,
+		userAnswer: UserAnswer,
 		isCorrect: boolean
 	) => {
+		const isTwoAnswer = question.correctAnswer.length === 2
+		const answerLabels = isTwoAnswer ? ['А', 'Б'] : ['А', 'Б', 'В']
+		const columns = isTwoAnswer ? 2 : 3
+
 		return (
 			<div className={styles.matchingAnswer}>
 				<div className={styles.answerComparison}>
 					<div className={styles.answerColumn}>
 						<strong>Ваш ответ:</strong>
-						<div className={styles.answerTable}>
+						<div className={styles.answerTable} data-columns={columns}>
 							<div className={styles.tableHeader}>
-								<div className={styles.tableCell}>А</div>
-								<div className={styles.tableCell}>Б</div>
-								<div className={styles.tableCell}>В</div>
+								{answerLabels.map(label => (
+									<div key={label} className={styles.tableCell}>
+										{label}
+									</div>
+								))}
 							</div>
 							<div className={styles.tableRow}>
 								{userAnswer.answer.map((value: number, index: number) => (
 									<div
 										key={index}
 										className={`
-											${styles.tableCell} 
-											${
-												!isCorrect && value !== question.correctAnswer[index]
-													? styles.wrongAnswer
-													: ''
-											}
-										`}
+										${styles.tableCell} 
+										${
+											!isCorrect && value !== question.correctAnswer[index]
+												? styles.wrongAnswer
+												: ''
+										}
+									`}
 									>
 										{value || '—'}
 									</div>
@@ -282,11 +308,13 @@ const TestComponent: React.FC = () => {
 							<strong className={styles.correctAnswerTitle}>
 								Правильный ответ:
 							</strong>
-							<div className={styles.answerTable}>
+							<div className={styles.answerTable} data-columns={columns}>
 								<div className={styles.tableHeader}>
-									<div className={styles.tableCell}>А</div>
-									<div className={styles.tableCell}>Б</div>
-									<div className={styles.tableCell}>В</div>
+									{answerLabels.map(label => (
+										<div key={label} className={styles.tableCell}>
+											{label}
+										</div>
+									))}
 								</div>
 								<div className={styles.tableRow}>
 									{question.correctAnswer.map(
@@ -461,11 +489,13 @@ const TestComponent: React.FC = () => {
 	}
 
 	const currentQuestionData = getCurrentQuestion()
-	const currentAnswer: [number, number, number] = testState.answers[
-		testState.mode === 'mistakes'
-			? testState.mistakeQuestions[testState.currentQuestion]
-			: testState.currentQuestion
-	]?.answer || [0, 0, 0]
+	const currentAnswer =
+		testState.answers[
+			testState.mode === 'mistakes'
+				? testState.mistakeQuestions[testState.currentQuestion]
+				: testState.currentQuestion
+		]?.answer ||
+		(currentQuestionData.correctAnswer.length === 2 ? [0, 0] : [0, 0, 0])
 
 	const totalQuestions = getTotalQuestions()
 	const currentNumber =

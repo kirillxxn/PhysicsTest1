@@ -90,12 +90,25 @@
 	color: #7f8c8d;
 }
 
-.questionGrid {
+.questionGridCompact {
 	display: grid;
-	grid-template-columns: repeat(5, 1fr);
+	grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
 	gap: 6px;
 	justify-content: center;
 	max-width: 100%;
+	margin: 0 auto;
+	padding: 8px;
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.questionGridFull {
+	display: grid;
+	grid-template-columns: repeat(10, 1fr);
+	gap: 6px;
+	justify-content: center;
+	max-width: 500px;
 	margin: 0 auto;
 	padding: 8px;
 	background: white;
@@ -526,34 +539,7 @@
 	border: 1px solid #27ae60;
 	font-weight: 600;
 }
-.questionGridCompact {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
-	gap: 6px;
-	justify-content: center;
-	max-width: 100%;
-	margin: 0 auto;
-	padding: 8px;
-	background: white;
-	border-radius: 8px;
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
 
-.questionGridFull {
-	display: grid;
-	grid-template-columns: repeat(10, 1fr);
-	gap: 6px;
-	justify-content: center;
-	max-width: 500px;
-	margin: 0 auto;
-	padding: 8px;
-	background: white;
-	border-radius: 8px;
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
-/* Добавить эти стили в существующий файл TestComponent.module.css */
-
-/* Стили для вопросов на соответствие в режиме просмотра ответов */
 .questionColumnsPreview {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -592,16 +578,25 @@
 	width: 100%;
 }
 
+/* Динамические таблицы ответов */
 .answerTable {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	display: inline-grid;
 	gap: 1px;
 	background-color: #e0e0e0;
 	border: 1px solid #e0e0e0;
 	border-radius: 6px;
 	overflow: hidden;
-	max-width: 200px;
 	margin-top: 10px;
+}
+
+.answerTable[data-columns='2'] {
+	grid-template-columns: repeat(2, 1fr);
+	max-width: 140px;
+}
+
+.answerTable[data-columns='3'] {
+	grid-template-columns: repeat(3, 1fr);
+	max-width: 200px;
 }
 
 .tableHeader {
@@ -621,6 +616,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	min-width: 40px;
 }
 
 .tableHeader .tableCell {
@@ -646,33 +642,43 @@
 	border: 1px solid #27ae60;
 }
 
-/* Адаптивность для таблиц ответов */
 @media (max-width: 768px) {
 	.questionColumnsPreview {
 		grid-template-columns: 1fr;
 		gap: 15px;
 	}
 
-	.answerTable {
+	.answerTable[data-columns='2'] {
+		max-width: 120px;
+	}
+
+	.answerTable[data-columns='3'] {
 		max-width: 150px;
 	}
 
 	.tableCell {
 		padding: 10px 6px;
 		font-size: 13px;
+		min-width: 35px;
 	}
 }
 
 @media (max-width: 480px) {
-	.answerTable {
+	.answerTable[data-columns='2'] {
+		max-width: 100px;
+	}
+
+	.answerTable[data-columns='3'] {
 		max-width: 120px;
 	}
 
 	.tableCell {
 		padding: 8px 4px;
 		font-size: 12px;
+		min-width: 30px;
 	}
 }
+
 @media (max-width: 768px) {
 	.questionGridFull {
 		grid-template-columns: repeat(4, 1fr);
@@ -693,6 +699,7 @@
 		grid-template-columns: repeat(6, 1fr);
 	}
 }
+
 @media (max-width: 360px) {
 	.testContainer {
 		padding: 10px;
@@ -735,10 +742,6 @@
 	.navButton {
 		width: 100%;
 		min-width: 140px;
-	}
-
-	.questionGrid {
-		grid-template-columns: repeat(10, 1fr);
 	}
 
 	.resultsActions {

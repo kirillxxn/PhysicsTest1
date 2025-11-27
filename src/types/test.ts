@@ -22,7 +22,7 @@ export type MatchingQuestion = {
 export type Question = MatchingQuestion
 
 export type UserAnswer = {
-	answer: [number, number, number]
+	answer: [number, number, number] | [number, number]
 	isCorrect: boolean
 }
 

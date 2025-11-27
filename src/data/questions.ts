@@ -152,7 +152,7 @@ export const questions: Question[] = [
 		},
 		correctAnswer: [1, 2, 3],
 	},
-	// Продолжаю добавлять остальные вопросы из вашего списка...
+
 	{
 		id: '1C63FD',
 		number: 7,
@@ -1537,7 +1537,7 @@ export const questions: Question[] = [
 		},
 		correctAnswer: [3, 1, 4],
 	},
-	// Добавляю вопросы из раздела "Добавлено в 2025 году"
+
 	{
 		id: '43324D',
 		number: 61,
